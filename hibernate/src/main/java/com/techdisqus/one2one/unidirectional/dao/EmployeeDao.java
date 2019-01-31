@@ -1,5 +1,6 @@
 package com.techdisqus.one2one.unidirectional.dao;
 
+
 import com.techdisqus.HibernateUtil;
 
 import com.techdisqus.one2one.unidirectional.model.Address;
@@ -8,13 +9,16 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
@@ -241,9 +245,98 @@ public class EmployeeDao {
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Employee> employeeCriteriaQuery = criteriaBuilder.createQuery(Employee.class);
         Root<Employee> employeeRoot =employeeCriteriaQuery.from(Employee.class);
-        employeeCriteriaQuery.multiselect(employeeRoot.get("name"));
-        return session.createQuery(employeeCriteriaQuery).setMaxResults(1).list();
+        employeeCriteriaQuery.multiselect(employeeRoot.get("name"),employeeRoot.get("salary"));
+
+        return  session.createQuery(employeeCriteriaQuery).setMaxResults(1).list();
     }
+
+    public double getSumOfAllSalariesUsingHql(){
+
+        String hql = "SELECT SUM(salary) FROM Employee";
+        Session session = getSession();
+        return  session.createQuery(hql,Double.class).uniqueResult();
+    }
+
+    public double getSumOfAllSalariesByNameUsingHql(String name){
+
+        String hql = "SELECT SUM(salary) FROM Employee e  where  e.name = :name";
+        Session session = getSession();
+        System.out.println(session.createQuery(hql,Double.class).setParameter("name",name));
+        return  session.createQuery(hql,Double.class).setParameter("name",name).uniqueResult();
+    }
+
+
+    public double getSumOfAllSalariesUsingCriteria(){
+
+
+        Session session = getSession();
+        Criteria criteria = session.createCriteria(Employee.class);
+        Projection sumProjection = Projections.sum("salary");
+        criteria.setProjection(sumProjection);
+
+        return (double) criteria.uniqueResult();
+    }
+
+    public double getSumOfAllSalariesUsingCriteriaJpa(){
+
+
+        Session session = getSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+
+        CriteriaQuery<Double> doubleCriteriaQuery = criteriaBuilder.createQuery(Double.class);
+
+        Root<Employee> employeeRoot = doubleCriteriaQuery.from(Employee.class);
+
+        doubleCriteriaQuery.select(criteriaBuilder.sumAsDouble(employeeRoot.get("salary")));
+
+        return session.createQuery(doubleCriteriaQuery).uniqueResultOptional().orElse(-1.0).doubleValue();
+
+
+        //return session.createQuery(employeeCriteriaQuery).uniqueResultOptional().or(-1).get().
+    }
+
+
+
+
+    public double getSumOfAllSalariesByZipCodeUsingHql(String zipCode){
+
+        String hql = "SELECT SUM(salary) FROM Employee e  where  e.address.zipCode = :zipCode";
+        Session session = getSession();
+
+        return  session.createQuery(hql,Double.class).setParameter("zipCode",zipCode).uniqueResultOptional().orElse(-1.0d).doubleValue();
+    }
+    public double getSumOfAllSalariesByZipCodeUsingCriteria(String zipCode){
+        Session session = getSession();
+        Criteria criteria = session.createCriteria(Employee.class);
+        Projection projection = Projections.sum("salary");
+
+        return (double)criteria.createAlias("address","a").setProjection(projection)
+                .add(Restrictions.eq("a.zipCode",zipCode)).uniqueResult();
+
+    }
+
+    public double getSumOfAllSalariesByZipCodeUsingCriteriaJpa(String zipCode){
+        Session session = getSession();
+
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Double> cr = cb.createQuery(Double.class);
+        Root<Employee> employeeRoot = cr.from(Employee.class);
+        cr.where(cb.equal(employeeRoot.join("address").get("zipCode"),zipCode));
+        cr.select(cb.sumAsDouble(employeeRoot.get("salary")));
+        return session.createQuery(cr).uniqueResultOptional().orElse(-1d).doubleValue();
+
+    }
+
+
+
+    public double getSumOfAllSalariesByCountryCodeUsingHql(int countryCode){
+
+        String hql = "SELECT SUM(salary) FROM Employee e  where  e.address.country.countryCode = :countryCode";
+        Session session = getSession();
+
+        return  session.createQuery(hql,Double.class).setParameter("countryCode",countryCode).uniqueResultOptional().orElse(-1.0d).doubleValue();
+    }
+
 
 
     private Session getSession(){

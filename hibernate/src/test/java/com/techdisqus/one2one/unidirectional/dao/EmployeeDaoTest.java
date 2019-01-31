@@ -170,10 +170,81 @@ public class EmployeeDaoTest {
 
     @Test
     public void testselectOnlyNameFromEmployeeUsingCriteriaJpa(){
-        List<Employee> employees = employeeDao.selectOnlyNameFromEmployeeUsingCriteriaJpa();
+        List<Employee > employees = employeeDao.selectOnlyNameFromEmployeeUsingCriteriaJpa();
         Assert.assertNotNull(employees);
         System.out.println(employees);
     }
+
+
+    @Test
+    public void testgetSumOfAllSalariesUsingHql(){
+        double salariesSum = employeeDao.getSumOfAllSalariesUsingHql();
+        Assert.assertNotNull(salariesSum);
+        System.out.println(salariesSum);
+    }
+
+    @Test
+    public void testgetSumOfAllSalariesByNameUsingHql(){
+        double salariesSum = employeeDao.getSumOfAllSalariesByNameUsingHql("shiva");
+        Assert.assertNotNull(salariesSum);
+        System.out.println(salariesSum);
+    }
+
+    @Test
+    public void testgetSumOfAllSalariesByZipCodeUsingHqlInvalidInput(){
+        double salariesSum = employeeDao.getSumOfAllSalariesByZipCodeUsingHql("shiva");
+        Assert.assertNotNull(salariesSum);
+        System.out.println(salariesSum);
+    }
+
+    @Test
+    public void testgetSumOfAllSalariesByZipCodeUsingHql(){
+        double salariesSum = employeeDao.getSumOfAllSalariesByZipCodeUsingHql("12344");
+        Assert.assertNotNull(salariesSum);
+        System.out.println(salariesSum);
+    }
+
+
+    @Test
+    public void testgetSumOfAllSalariesByCountryCodeUsingHql(){
+        double salariesSum = employeeDao.getSumOfAllSalariesByCountryCodeUsingHql(1);
+        Assert.assertNotNull(salariesSum);
+        System.out.println(salariesSum);
+    }
+
+
+    @Test
+    public void testgetSumOfAllSalariesUsingCriteria(){
+        double salariesSum = employeeDao.getSumOfAllSalariesUsingCriteria();
+        Assert.assertNotNull(salariesSum);
+        System.out.println(salariesSum);
+    }
+
+    @Test
+    public void testgetSumOfAllSalariesUsingCriteriaJpa(){
+        double salariesSum = employeeDao.getSumOfAllSalariesUsingCriteriaJpa();
+        Assert.assertNotNull(salariesSum);
+        System.out.println(salariesSum);
+    }
+
+
+
+    @Test
+    public void testgetSumOfAllSalariesByZipCodeUsingCriteria(){
+        double salariesSum = employeeDao.getSumOfAllSalariesByZipCodeUsingCriteria("12344");
+        Assert.assertNotNull(salariesSum);
+        System.out.println(salariesSum);
+    }
+
+    @Test
+    public void testgetSumOfAllSalariesByZipCodeUsingCriteriaJpa(){
+        double salariesSum = employeeDao.getSumOfAllSalariesByZipCodeUsingCriteriaJpa("12344");
+        Assert.assertNotNull(salariesSum);
+        System.out.println(salariesSum);
+    }
+
+
+
 
 
 

@@ -24,6 +24,11 @@ public class Employee implements Serializable {
         this.name = name;
     }
 
+    public Employee(String name,double salary){
+        this.name = name;
+        this.salary = salary;
+    }
+
     @Id
     @Column(name = "EMPLOYEE_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
