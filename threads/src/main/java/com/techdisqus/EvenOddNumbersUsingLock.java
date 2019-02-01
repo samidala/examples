@@ -1,5 +1,7 @@
 package com.techdisqus;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -15,74 +17,58 @@ public class EvenOddNumbersUsingLock {
     // Condition for EVEN block
     private final Condition evenCondition = aLock.newCondition();
 
+    private final AtomicBoolean isTrue = new AtomicBoolean(false);
+
     private volatile int counter = 1;
 
-    public void printOdd() throws InterruptedException {
-        while(counter <= 10) {
-            try {
-                // Getting lock for ODD block
-                while (counter % 2 == 0){
-                    oddCondition.await();
-                }
-                aLock.lock();
-                System.out.println("ODD : "+ counter++);
+    public void printOdd(int no) throws InterruptedException {
 
-                // signaling to EVEN condition
+        try{
+            aLock.lock();
+            while (isTrue.get())
+            evenCondition.await();
+            System.out.println(Thread.currentThread().getName() +" printing "+no);
+            isTrue.set(true);
+            oddCondition.signal();
 
 
-
-            }catch(Exception e){
-                System.out.println(e);
-            }
-                finally {
-                if(counter % 2 == 1) {
-                    aLock.unlock();
-                }
-            }
-            evenCondition.signal();
+        }finally {
+            aLock.unlock();
         }
     }
 
     /*
      * EVEN Block
      */
-    public void printEven() throws InterruptedException {
-        while(counter <= 10) {
-            try {
-                while (counter % 2 == 1){
-                    evenCondition.await();
-                }
-                // Getting lock for EVEN block
-                aLock.lock();
-                System.out.println("EVEN : "+ counter++);
-                // signaling to ODD condition
+    public void printEven(int no) throws InterruptedException {
+        try{
+            aLock.lock();
+            while (!isTrue.get())
+                oddCondition.await();
+            System.out.println(Thread.currentThread().getName() +" printing "+no);
+            isTrue.set(false);
+            evenCondition.signal();
 
-
-
-            }catch(Exception e){
-                System.out.println(e);
-            }finally {
-                if(counter % 2 == 0) {
-                    aLock.unlock();
-                }
-            }
-            oddCondition.signal();
+        }finally {
+            aLock.unlock();
         }
+
     }
 
     public static void main(String[] args) {
         EvenOddNumbersUsingLock evenOddNumbersUsingLock = new EvenOddNumbersUsingLock();
         new Thread(() -> {
             try {
-                evenOddNumbersUsingLock.printEven();
+                for(int i = 2; i <= 10;i+=2){
+                evenOddNumbersUsingLock.printEven(i);}
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         },"even thread").start();
 
         new Thread(() -> {
-            try {
-                evenOddNumbersUsingLock.printOdd();
+            try {for(int i = 1; i <= 10;i+=2){
+                evenOddNumbersUsingLock.printOdd(i);}
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
