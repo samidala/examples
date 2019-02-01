@@ -1,5 +1,8 @@
-package com.techdisqus.one2one.unidirectional.model;
+package com.techdisqus.one2many.unidirectional.model;
 
+
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -7,18 +10,17 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-import java.io.Serializable;
 
 @Entity
-@Table(name = "ADDRESS")
-public class Address implements Serializable {
+@Table(name = "STUDENT_ADDRESS")
+public class StudentAddress {
+
 
     @Id
-    @Column(name = "EMPLOYEE_ID")
+    @Column(name = "ADDRESS_ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "STREET_NAME")
@@ -33,15 +35,15 @@ public class Address implements Serializable {
     @Column(name = "ZIP_CODE")
     private String zipCode;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.ALL})
     @JoinColumn(name = "COUNTRY_CODE")
-    private Country country;
+    private StudentCountry studentCountry;
 
     public int getId() {
         return id;
     }
 
-    public Address setId(int id) {
+    public StudentAddress setId(int id) {
         this.id = id;
         return this;
     }
@@ -50,7 +52,7 @@ public class Address implements Serializable {
         return streetName;
     }
 
-    public Address setStreetName(String streetName) {
+    public StudentAddress setStreetName(String streetName) {
         this.streetName = streetName;
         return this;
     }
@@ -59,7 +61,7 @@ public class Address implements Serializable {
         return cityName;
     }
 
-    public Address setCityName(String cityName) {
+    public StudentAddress setCityName(String cityName) {
         this.cityName = cityName;
         return this;
     }
@@ -68,7 +70,7 @@ public class Address implements Serializable {
         return stateName;
     }
 
-    public Address setStateName(String stateName) {
+    public StudentAddress setStateName(String stateName) {
         this.stateName = stateName;
         return this;
     }
@@ -77,17 +79,17 @@ public class Address implements Serializable {
         return zipCode;
     }
 
-    public Address setZipCode(String zipCode) {
+    public StudentAddress setZipCode(String zipCode) {
         this.zipCode = zipCode;
         return this;
     }
 
-    public Country getCountry() {
-        return country;
+    public StudentCountry getStudentCountry() {
+        return studentCountry;
     }
 
-    public Address setCountry(Country country) {
-        this.country = country;
+    public StudentAddress setStudentCountry(StudentCountry studentCountry) {
+        this.studentCountry = studentCountry;
         return this;
     }
 
@@ -101,4 +103,5 @@ public class Address implements Serializable {
                 ", zipCode='" + zipCode + '\'' +
                 '}';
     }
+
 }

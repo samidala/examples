@@ -67,7 +67,7 @@ public class EmployeeDao {
 
     public List<Employee> findEmployeesByCityUsingHqlUsingJoin(String city){
 
-        String hql = "from Employee e where e.address.cityName = :city";
+        String hql = "from BiEmployee e where e.address.cityName = :city";
 
         List<Employee> employees = getSession().createQuery(hql,Employee.class).setParameter("city",city).getResultList();
         return employees;
@@ -76,7 +76,7 @@ public class EmployeeDao {
 
     public List<Employee> findEmployeesByCityUsingHqlUsingJoinFetch(String city){
 
-        String hql = "from Employee e join fetch e.address a where e.address.cityName = :city";
+        String hql = "from BiEmployee e join fetch e.address a where e.address.cityName = :city";
 
         List<Employee> employees = getSession().createQuery(hql,Employee.class).setParameter("city",city).getResultList();
         return employees;
@@ -127,21 +127,21 @@ public class EmployeeDao {
 
     public List<Employee> findEmployeesByCountryUsingHql(String countryCode){
 
-        String hql = " from Employee e  where e.address.country.countryCode = :countryCode";
+        String hql = " from BiEmployee e  where e.address.country.countryCode = :countryCode";
         return getSession().createQuery(hql,Employee.class).setParameter("countryCode",Integer.parseInt(countryCode)).list();
 
     }
 
     public List<Employee> findEmployeesByCountryUsingHqlEagerFetch(String countryCode){
 
-        String hql = " from Employee e join fetch  e.address a where a.country.countryCode = :countryCode";
+        String hql = " from BiEmployee e join fetch  e.address a where a.country.countryCode = :countryCode";
         return getSession().createQuery(hql,Employee.class).setParameter("countryCode",Integer.parseInt(countryCode)).list();
 
     }
 
     public List<Employee> findEmployeesByCountryUsingHqlEagerFetchIncludingCountry(String countryCode){
 
-        String hql = " from Employee e left join fetch  e.address a left join fetch a.country c where c.countryCode = :countryCode";
+        String hql = " from BiEmployee e left join fetch  e.address a left join fetch a.country c where c.countryCode = :countryCode";
         return getSession().createQuery(hql,Employee.class).setParameter("countryCode",Integer.parseInt(countryCode)).list();
 
     }
@@ -197,7 +197,7 @@ public class EmployeeDao {
 
         Session session = getSession();
 
-        String hql = " from Employee";
+        String hql = " from BiEmployee";
         return session.createQuery(hql,Employee.class).setMaxResults(1).setFirstResult(1). getResultList();
     }
 
@@ -206,7 +206,7 @@ public class EmployeeDao {
         Session session = getSession();
 
         Criteria criteria = session.createCriteria(Employee.class);
-        String hql = " from Employee";
+        String hql = " from BiEmployee";
         criteria.addOrder(Order.asc("name"));
         criteria.setFirstResult(1).setMaxResults(1);
         return criteria.list();
@@ -252,14 +252,14 @@ public class EmployeeDao {
 
     public double getSumOfAllSalariesUsingHql(){
 
-        String hql = "SELECT SUM(salary) FROM Employee";
+        String hql = "SELECT SUM(salary) FROM BiEmployee";
         Session session = getSession();
         return  session.createQuery(hql,Double.class).uniqueResult();
     }
 
     public double getSumOfAllSalariesByNameUsingHql(String name){
 
-        String hql = "SELECT SUM(salary) FROM Employee e  where  e.name = :name";
+        String hql = "SELECT SUM(salary) FROM BiEmployee e  where  e.name = :name";
         Session session = getSession();
         System.out.println(session.createQuery(hql,Double.class).setParameter("name",name));
         return  session.createQuery(hql,Double.class).setParameter("name",name).uniqueResult();
@@ -300,7 +300,7 @@ public class EmployeeDao {
 
     public double getSumOfAllSalariesByZipCodeUsingHql(String zipCode){
 
-        String hql = "SELECT SUM(salary) FROM Employee e  where  e.address.zipCode = :zipCode";
+        String hql = "SELECT SUM(salary) FROM BiEmployee e  where  e.address.zipCode = :zipCode";
         Session session = getSession();
 
         return  session.createQuery(hql,Double.class).setParameter("zipCode",zipCode).uniqueResultOptional().orElse(-1.0d).doubleValue();
@@ -331,12 +331,37 @@ public class EmployeeDao {
 
     public double getSumOfAllSalariesByCountryCodeUsingHql(int countryCode){
 
-        String hql = "SELECT SUM(salary) FROM Employee e  where  e.address.country.countryCode = :countryCode";
+        String hql = "SELECT SUM(salary) FROM BiEmployee e  where  e.address.country.countryCode = :countryCode";
         Session session = getSession();
 
         return  session.createQuery(hql,Double.class).setParameter("countryCode",countryCode).uniqueResultOptional().orElse(-1.0d).doubleValue();
     }
 
+    public double getSumOfAllSalariesByCountryCodeUsingCriteria(int countryCode){
+        Session session = getSession();
+        Criteria criteria = session.createCriteria(Employee.class,"e");
+
+        Projection projection = Projections.sum("e.salary");
+
+        return (double)criteria.createAlias("address","a").createCriteria("a.country","c").
+                setProjection(projection)
+                .add(Restrictions.eq("c.countryCode",countryCode)).uniqueResult();
+
+    }
+
+
+    public double getSumOfAllSalariesByCountryCodeUsingCriteriaJpa(int countryCode){
+        Session session = getSession();
+
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Double> cr = cb.createQuery(Double.class);
+        Root<Employee> employeeRoot = cr.from(Employee.class);
+        cr.where(cb.equal(employeeRoot.join("address").join("country").get("countryCode"),countryCode));
+
+        cr.select(cb.sumAsDouble(employeeRoot.get("salary")));
+        return session.createQuery(cr).uniqueResultOptional().orElse(-1d).doubleValue();
+
+    }
 
 
     private Session getSession(){

@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-public class EmployeeDaoTest {
+public class EmployeeHqlDaoTest {
 
     @Test
     public void testSave(){
@@ -242,6 +242,23 @@ public class EmployeeDaoTest {
         Assert.assertNotNull(salariesSum);
         System.out.println(salariesSum);
     }
+
+    @Test
+    public void testgetSumOfAllSalariesByCountryCodeUsingCriteria(){
+        double salariesSum = employeeDao.getSumOfAllSalariesByCountryCodeUsingCriteria(1);
+        Assert.assertNotNull(salariesSum);
+        System.out.println(salariesSum);
+    }
+
+    @Test
+    public void testgetSumOfAllSalariesByCountryCodeUsingCriteriaJpa(){
+        double salariesSum = employeeDao.getSumOfAllSalariesByCountryCodeUsingCriteriaJpa(1);
+        Assert.assertNotNull(salariesSum);
+        System.out.println(salariesSum);
+    }
+
+
+
 
 
 

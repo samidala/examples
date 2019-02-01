@@ -16,6 +16,17 @@
         <mapping class="com.techdisqus.one2one.unidirectional.model.Employee"></mapping>
         <mapping class="com.techdisqus.one2one.unidirectional.model.Address"></mapping>
         <mapping class="com.techdisqus.one2one.unidirectional.model.Country"></mapping>
+
+        <mapping class="com.techdisqus.one2one.bidirectional.model.BiEmployee"></mapping>
+        <mapping class="com.techdisqus.one2one.bidirectional.model.BiAddress"></mapping>
+        <mapping class="com.techdisqus.one2one.bidirectional.model.BiCountry"></mapping>
+
+        <mapping class="com.techdisqus.one2many.unidirectional.model.Student"></mapping>
+        <mapping class="com.techdisqus.one2many.unidirectional.model.StudentAddress"></mapping>
+        <mapping class="com.techdisqus.one2many.unidirectional.model.College"></mapping>
+        <mapping class="com.techdisqus.one2many.unidirectional.model.StudentCountry"></mapping>
+
+     
     </session-factory>
 
 </hibernate-configuration>

@@ -3,12 +3,14 @@ package com.techdisqus.one2one.bidirectional.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ADDRESS")
-public class Address implements Serializable {
+@Table(name = "ADDRESS1")
+public class BiAddress implements Serializable {
 
     @Id
     @Column(name = "EMPLOYEE_ID")
@@ -26,20 +28,28 @@ public class Address implements Serializable {
     @Column(name = "ZIP_CODE")
     private String zipCode;
 
+    @OneToOne(mappedBy = "biAddress")
+    private BiEmployee biEmployee;
+
+    @OneToOne
+    @JoinColumn(name = "COUNTRY_CODE")
+    private BiCountry biCountry;
+
     public int getId() {
         return id;
     }
 
-    public Address setId(int id) {
+    public BiAddress setId(int id) {
         this.id = id;
         return this;
     }
+
 
     public String getStreetName() {
         return streetName;
     }
 
-    public Address setStreetName(String streetName) {
+    public BiAddress setStreetName(String streetName) {
         this.streetName = streetName;
         return this;
     }
@@ -48,7 +58,7 @@ public class Address implements Serializable {
         return cityName;
     }
 
-    public Address setCityName(String cityName) {
+    public BiAddress setCityName(String cityName) {
         this.cityName = cityName;
         return this;
     }
@@ -57,7 +67,7 @@ public class Address implements Serializable {
         return stateName;
     }
 
-    public Address setStateName(String stateName) {
+    public BiAddress setStateName(String stateName) {
         this.stateName = stateName;
         return this;
     }
@@ -66,14 +76,32 @@ public class Address implements Serializable {
         return zipCode;
     }
 
-    public Address setZipCode(String zipCode) {
+    public BiAddress setZipCode(String zipCode) {
         this.zipCode = zipCode;
+        return this;
+    }
+
+    public BiEmployee getBiEmployee() {
+        return biEmployee;
+    }
+
+    public BiAddress setBiEmployee(BiEmployee biEmployee) {
+        this.biEmployee = biEmployee;
+        return this;
+    }
+
+    public BiCountry getBiCountry() {
+        return biCountry;
+    }
+
+    public BiAddress setBiCountry(BiCountry biCountry) {
+        this.biCountry = biCountry;
         return this;
     }
 
     @Override
     public String toString() {
-        return "Address{" +
+        return "BiAddress{" +
                 "id=" + id +
                 ", streetName='" + streetName + '\'' +
                 ", cityName='" + cityName + '\'' +
