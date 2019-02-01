@@ -132,9 +132,7 @@ public class CollegeStudentHqlDao {
         CriteriaQuery<College> collegeCriteriaQuery = cb.createQuery(College.class);
 
         Root<College> collegeRoot = collegeCriteriaQuery.from(College.class);
-
         collegeCriteriaQuery.select(collegeRoot);
-        //collegeRoot.alias("outer");
 
 
         Subquery<Long> subquery = collegeCriteriaQuery.subquery(Long.class);
@@ -144,8 +142,8 @@ public class CollegeStudentHqlDao {
 
         subquery.where(cb.equal(collegeRoot.get("id"),studentCollegeJoin.get("id") ));
 
-        subquery.correlate(collegeRoot);
-        subquery.groupBy(studentCollegeJoin.get("id"));
+        //subquery.correlate(collegeRoot);
+        //subquery.groupBy(studentCollegeJoin.get("id"));
 
         collegeCriteriaQuery.where(cb.greaterThanOrEqualTo(subquery,x));
 
@@ -154,7 +152,7 @@ public class CollegeStudentHqlDao {
 
     }
 
-   
+
 
     protected Session getSession(){
         return HibernateUtil.buildSessionFactory().openSession();
