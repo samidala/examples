@@ -11,6 +11,7 @@
     <modules>
         <module>hibernate</module>
         <module>threads</module>
+        <module>scrapper</module>
     </modules>
 
     <dependencies>

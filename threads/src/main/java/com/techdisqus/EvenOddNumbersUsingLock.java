@@ -25,7 +25,7 @@ public class EvenOddNumbersUsingLock {
 
         try{
             aLock.lock();
-            while (isTrue.get())
+            if (isTrue.get())
             evenCondition.await();
             System.out.println(Thread.currentThread().getName() +" printing "+no);
             isTrue.set(true);
@@ -42,12 +42,14 @@ public class EvenOddNumbersUsingLock {
      */
     public void printEven(int no) throws InterruptedException {
         try{
+            Thread.sleep(2000);
             aLock.lock();
-            while (!isTrue.get())
+            if (!isTrue.get())
                 oddCondition.await();
             System.out.println(Thread.currentThread().getName() +" printing "+no);
             isTrue.set(false);
             evenCondition.signal();
+
 
         }finally {
             aLock.unlock();
@@ -55,7 +57,7 @@ public class EvenOddNumbersUsingLock {
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         EvenOddNumbersUsingLock evenOddNumbersUsingLock = new EvenOddNumbersUsingLock();
         new Thread(() -> {
             try {
@@ -65,6 +67,8 @@ public class EvenOddNumbersUsingLock {
                 e.printStackTrace();
             }
         },"even thread").start();
+
+        Thread.sleep(3000);
 
         new Thread(() -> {
             try {for(int i = 1; i <= 10;i+=2){
